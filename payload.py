@@ -618,15 +618,18 @@ def main():
         if not send_telemetry(ser, aes_key, processor):
             HOST(f"{RED}Telemetry transmission failed{RESET}")
         
-        # Send test message
-        pt = b"HELLO_FROM_HOST"
-        encrypted = aes_cbc_encrypt(pt, aes_key)
-        send_line(ser, "ENC:" + base64.b64encode(encrypted).decode())
-        time.sleep(0.5)
+        # # Send test message
+        # pt = b"HELLO_FROM_HOST"
+        # encrypted = aes_cbc_encrypt(pt, aes_key)
+        # send_line(ser, "ENC:" + base64.b64encode(encrypted).decode())
+        # time.sleep(0.5)
         
-        # Close session
-        send_line(ser, "bye")
-        time.sleep(0.5)
+        # # Close session
+        # send_line(ser, "bye")
+        # time.sleep(0.5)
+
+        while True:
+            pass
         
     finally:
         # Cleanup
@@ -639,3 +642,4 @@ def main():
 if __name__ == "__main__":
 
     main()
+
