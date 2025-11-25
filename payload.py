@@ -628,10 +628,13 @@ def main():
         # send_line(ser, "bye")
         # time.sleep(0.5)
 
-        send_line(ser, "TEST_DECRYPT")
+        # send_line(ser, "TEST_DECRYPT")
 
-        while True:
-            pass
+        try:
+            while not session_killed.is_set():
+                time.sleep(0.1)
+        except KeyboardInterrupt:
+            HOST("User terminated session")
         
     finally:
         # Cleanup
@@ -644,5 +647,6 @@ def main():
 if __name__ == "__main__":
 
     main()
+
 
 
