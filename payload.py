@@ -628,6 +628,8 @@ def main():
         # send_line(ser, "bye")
         # time.sleep(0.5)
 
+        send_line(ser, "TEST_DECRYPT")
+
         while True:
             pass
         
@@ -642,4 +644,5 @@ def main():
 if __name__ == "__main__":
 
     main()
+
 
