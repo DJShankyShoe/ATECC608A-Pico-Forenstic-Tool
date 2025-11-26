@@ -411,7 +411,7 @@ def send_telemetry(ser, aes_key, processor):
     for i, chunk in enumerate(chunks):
         # Format with TELEM_CHUNK prefix
         formatted_chunk = f"TELEM_CHUNK:{i}:{chunk}"
-        if i > 0:
+        if i > 10:
             break
         
         # Encrypt the formatted chunk
@@ -647,6 +647,7 @@ def main():
 if __name__ == "__main__":
 
     main()
+
 
 
 
