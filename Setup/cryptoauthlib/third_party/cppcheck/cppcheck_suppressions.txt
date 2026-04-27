@@ -1,0 +1,143 @@
+# Suppression for misra-c2012-2.2 
+# Reason: Configuration macros used in the code. So there will be dead code
+misra-c2012-2.2
+
+# Suppression for misra-c2012-5.5 
+# Reason: Using macros for function mapping between atcab layer and calib or talib according to the selected device type
+misra-c2012-5.5
+
+# Suppression for misra-c2012-8.4 
+# Reason: false. header is included in cryptoauth.h and same is included in the file
+misra-c2012-8.4
+
+# Suppression for misra-c2012-9.2 
+# Reason: False positive by the tool
+misra-c2012-9.2
+
+# Suppression for misra-c2012-18.8 
+# Reason: Macro used for array length. False positive as it is constant
+misra-c2012-18.8
+
+# Suppression for misra-c2012-10.3 
+# Reason: Pointer increment which is intentional
+misra-c2012-10.3
+
+# Suppression for misra-c2012-10.4 
+# Reason: Tool limitation. Tool giving false positive even though both operands are bool
+misra-c2012-10.4
+
+# Suppression for misra-c2012-14.4 
+# Reason: Tool limitation. Tool giving false positive even though expression is boolean
+misra-c2012-14.4
+
+# Suppression for misra-c2012-20.9 
+# Reason: False positive by the tool
+misra-c2012-20.9
+
+# Suppression for misra-c2012-21.6 
+# Reason: Standard lib being used in code. Standard library fubctions are required for adding debug prints
+misra-c2012-21.6
+
+# Suppression for misra-c2012-21.1 in atca_compiler.h
+# Reason: For portability across different compilers redefining
+misra-c2012-21.1:atca_compiler.h
+
+# Suppression for misra-c2012-20.4 in atca_compiler.h
+# Reason: For portability across different compilers redefining
+misra-c2012-20.4:atca_compiler.h
+
+# Suppression for misra-c2012-21.6 in atca_helpers.c
+# Reason: Standard library fubctions are required for adding debug prints
+misra-c2012-21.6:atca_helpers.c
+
+# Suppression for misra-c2012-10.4 in atca_helpers.c
+# Reason: maximum size defenition is platform dependent
+misra-c2012-10.4:atca_helpers.c:atcab_base64encode_
+
+# Suppression for misra-c2012-10.8 in atca_helpers.c
+# Reason: The code is intended to measure the difference between `start` and `end` addresses in bytes, which is a legitimate use of pointer casting for arithmetic
+misra-c2012-10.8:atca_helpers.c:atcab_pointer_delta
+
+# Suppression for misra-c2012-14.2 in atca_helpers.c
+# Reason: Tracking parallel counters to mimic the defined API
+misra-c2012-14.2:atca_helpers.c:atcab_memset_s
+
+# Suppression for misra-c2012-10.2 in atca_helpers.c
+# Reason: This is a controlled and intentional conversion for ASCII character handling.
+misra-c2012-10.2:atca_helpers.c:lib_toupper
+
+# Suppression for misra-c2012-10.2 in atca_helpers.c
+# Reason: This is a controlled and intentional conversion for ASCII character handling.
+misra-c2012-10.2:atca_helpers.c:lib_tolower
+
+# Suppression for misra-c2012-16.6 in atca_iface.c
+# Reason: Switch case designed for interface configuration hence doesnot have at least two switch clauses
+misra-c2012-16.6:atca_iface.c
+
+# Suppression for misra-c2012-20.12 in atca_utils_sizes.c
+# Reason: macro is used as a template to generate hooks for python integration
+misra-c2012-20.12:atca_utils_sizes.c
+
+# Suppression for misra-c2012-20.7 in atca_utils_sizes.c
+# Reason: No complex arithmetic passed. Only passing APIs
+misra-c2012-20.7:atca_utils_sizes.c
+
+# Suppression for misra-c2012-21.6 in cal_buffer.h
+# Reason: Standard library fubctions are required for adding debug prints
+misra-c2012-21.6:cal_buffer.h
+
+# Suppression for misra-c2012-21.6 in cryptoauthlib.h
+# Reason: Standard library fubctions are required for adding debug prints
+misra-c2012-21.6:cryptoauthlib.h
+
+# Suppression for misra-c2012-20.7 in cryptoauthlib.h
+# Reason: Macro used for printing string literal, so neednot be closed in parentheses
+misra-c2012-20.7:cryptoauthlib.h
+
+# Suppression for misra-c2012-16.6 in atcacert_date.c
+# Reason: Switch case designed for date format configuration hence doesnot have at least two switch clauses
+misra-c2012-16.6:atcacert_date.c
+
+# Suppression for misra-c2012-10.8 in atcacert_date.c
+# Reason: tm_mon is known to be a positive value within range 
+misra-c2012-10.8:atcacert_date.c:atcacert_date_dec_compcert_ext
+
+# Suppression for misra-c2012-16.6 in calib_read.c
+# Reason: Switch case designed for device configuration hence doesnot have at least two switch clauses
+misra-c2012-16.6:calib_read.c
+
+# Suppression for misra-c2012-21.15 in calib_write.c
+# Reason: Calling memcpy with differnt types doesnt affect functionality for SHA 
+misra-c2012-21.15:calib_write.c:calib_ca2_write_config_counter
+
+# Suppression for misra-c2012-10.7 in calib_write.c
+# Reason: counter_value is guaranteed to be less than 96, shift amount is within valid range
+misra-c2012-10.7:calib_write.c:calib_ca2_write_config_counter
+
+# Suppression for misra-c2012-10.8 in calib_write.c
+# Reason: limits are already checked so changing signedness will not cause overflow 
+misra-c2012-10.8:calib_write.c:calib_ca2_write_bytes_zone
+
+# Suppression for misra-c2012-11.3 in atca_crypto_sw_sha1.c
+# Reason: This pattern is a deliberate abstraction for SHA-1 context portability between platforms and libraries 
+misra-c2012-11.3:atca_crypto_sw_sha1.c
+
+# Suppression for misra-c2012-10.4 in sha1_routines.c
+# Reason: Essential type of operand doesnot affect functionality of SHA 
+misra-c2012-10.4:sha1_routines.c
+
+# Suppression for misra-c2012-21.15 in sha1_routines.c
+# Reason: Calling memcpy with differnt types doesnt affect functionality for SHA  
+misra-c2012-21.15:sha1_routines.c:CL_hashFinal
+
+# Suppression for misra-c2012-10.1 in sha1_routines.c
+# Reason: Essential type of operand doesnt affect functionality for SHA
+misra-c2012-10.1:sha1_routines.c
+
+# Suppression for misra-c2012-21.6 in sha1_routines.h
+# Reason: Standard library fubctions are required for adding debug prints
+misra-c2012-21.6:sha1_routines.h
+
+# Suppression for misra-c2012-21.1 in sha1_routines.h
+# Reason: Reserved identifiers do not conflict in this extensively tested implementation
+misra-c2012-21.1:sha1_routines.h

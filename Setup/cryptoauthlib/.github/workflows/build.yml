@@ -1,0 +1,150 @@
+name: Build and deploy wheels to pypi
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 20*
+
+jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Describe Tag & Branch Name
+        if:  github.event_name == 'push' && startsWith(github.ref, 'refs/tags/20')
+        id: build_names
+        shell: bash
+        run: |
+          cd python
+          echo ${GITHUB_REF#refs/tags/} >VERSION
+
+      - name: Configure Environment
+        shell: bash
+        run: |
+          cd python
+          cp ../release_notes.md .
+          cp -r ../lib .
+          cp -r ../third_party .
+          mkdir app
+          cp -r ../app/tng app
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.23.3
+        with:
+          package-dir: python 
+        env:
+          CIBW_SKIP: cp36-* cp37-* pp37-* cp38-* pp38-* *-musllinux* pp*-macosx*"
+          CIBW_MANYLINUX_X86_64_IMAGE: "manylinux_2_28"
+          CIBW_BEFORE_BUILD_LINUX: "yum update -y && yum install -y libusb-devel"
+          CIBW_BUILD_VERBOSITY: 3
+          CIBW_ARCHS_LINUX: "x86_64"
+          CIBW_ARCHS_MACOS: "universal2"
+          # Skip trying to test arm64 builds on Intel Macs
+          # Latest MacOS GitHub actions runner is arm64 based
+          #CIBW_TEST_SKIP: "*-macosx_arm64 *-macosx_universal2:arm64"
+          CMAKE_OSX_ARCHITECTURES: "arm64;x86_64"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          path: wheelhouse/*.whl
+          name: wheelhouse-${{ matrix.os }}
+          overwrite: true
+
+  build_sdist:
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        name: Install Python
+        with:
+          python-version: '3.x'
+
+      - name: Describe Tag & Branch Name
+        id: build_names
+        run: |
+          echo TAG_NAME=${GITHUB_REF#refs/tags/} >> $GITHUB_OUTPUT
+
+      - name: Check if event is a tag push
+        id: check_tag
+        run: |
+          if [[ "${GITHUB_REF}" != refs/tags/* ]]; then
+            echo "This event is not a tag push. Skipping sdist build."
+            echo "skip_build=true" >> $GITHUB_ENV  # Set an environment variable to control flow
+          fi
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install setuptools wheel  # Install setuptools and wheel
+
+      - name: Install USB dependencies
+        run: sudo apt-get update && sudo apt-get install -y libusb-1.0-0-dev libudev-dev
+
+      - name: Build sdist
+        if: env.skip_build != 'true'
+        run: |
+          echo ${{ env.TAG_NAME }}
+          cd python
+          echo ${{ env.TAG_NAME }} >VERSION
+          cp -r ../lib .
+          cp -r ../third_party .
+          mkdir app
+          cp -r ../app/tng app
+          python setup.py sdist
+        env:
+          TAG_NAME: ${{ steps.build_names.outputs.TAG_NAME }}
+
+      - uses: actions/upload-artifact@v4
+        if: env.skip_build != 'true'
+        with:
+          path: python/dist/*.tar.gz
+          name: sdist
+          overwrite: true
+
+  upload_pypi:
+    if:  github.event_name == 'push' && startsWith(github.ref, 'refs/tags/20')
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Download wheel artifacts
+        uses: actions/download-artifact@v4.1.7
+        with:
+          name: wheelhouse-${{ matrix.os }}
+          path: dist
+
+      - name: Download sdist artifact
+        uses: actions/download-artifact@v4.1.7
+        with:
+          name: sdist
+          path: dist
+  
+      - name: Production Release
+        if: startsWith(github.repository, 'MicrochipTech')
+        uses: pypa/gh-action-pypi-publish@release/v1.12
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip_existing: true
+
+      - name: Test Release
+        if: ${{ !startsWith(github.repository, 'MicrochipTech') }}
+        uses: pypa/gh-action-pypi-publish@release/v1.12
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          repository_url: https://test.pypi.org/legacy/
+          skip_existing: true
